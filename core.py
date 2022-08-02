@@ -457,14 +457,27 @@ def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, f
             try:
                 f_rating = json_data.get('userrating')
                 uc = json_data.get('uservotes')
-                print(f"""  <rating>{round(f_rating * 2.0, 1)}</rating>
-  <criticrating>{round(f_rating * 20.0, 1)}</criticrating>
+                
+                f_source = json_data.get('source')
+                if f_source == 'javlibrary':
+                    print(f"""  <rating>{round(f_rating, 1)}</rating>
+  <criticrating>{round(f_rating, 1)}</criticrating>
+  <ratings>
+    <rating name="javlibrary" max="10" default="true">
+      <value>{f_rating}</value>
+      <votes>{uc}</votes>
+    </rating>
+  </ratings>""", file=code)
+                elif f_source == 'javdb':
+                    print(f"""  <rating>{round(f_rating * 2.0, 1)}</rating>
+  <criticrating>{round(f_rating * 2.0, 1)}</criticrating>
   <ratings>
     <rating name="javdb" max="5" default="true">
       <value>{f_rating}</value>
       <votes>{uc}</votes>
     </rating>
   </ratings>""", file=code)
+
             except:
                 if old_nfo:
                     try:
