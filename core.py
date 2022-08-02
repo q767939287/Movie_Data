@@ -84,7 +84,7 @@ def small_cover_check(path, filename, cover_small, movie_path, json_headers=None
 
 
 # 判断是否存在重复视频文件，如果存在重复文件即将视频文件移动到是失败的目录
-def IsDepulicatefileInfolder(json_data, filepath, multi_part, number, part, leak_word, c_word, hack_word): 
+def IsDepulicatefileInfolder(json_data, filepath, multi_part, part, leak_word, c_word, hack_word): 
     #此段代码拷贝自create_folder() 函数
     title, studio, year, outline, runtime, director, actor_photo, release, number, cover, trailer, website, series, label = get_info(json_data)
     conf = config.getInstance()
@@ -898,7 +898,7 @@ def core_main(movie_path, number_th, oCC, specified_source=None, specified_url=N
     #  3：不改变路径刮削
     if conf.main_mode() == 1:
         #如果存在重复的视频文件，则不刮削
-        if IsDepulicatefileInfolder(json_data, movie_path, multi_part, number, part, leak_word, c_word, hack_word):
+        if IsDepulicatefileInfolder(json_data, movie_path, multi_part, part, leak_word, c_word, hack_word):
             return
         
         # 创建文件夹
