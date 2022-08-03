@@ -32,6 +32,7 @@ class Javlibrary(Parser):
         self.cookies =  {'over18':'1'}
 
     def search(self, number):
+        self.htmltree = None
         self.number = number.upper()
         self.session = request_session(cookies=self.cookies, proxies=self.proxies, verify=self.verify)
         if self.specifiedUrl:
