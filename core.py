@@ -452,6 +452,9 @@ def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, f
                     xur = old_nfo.xpath('//userrating/text()')[0]
                     if isinstance(xur, str) and re.match('\d+\.\d+|\d+', xur.strip()):
                         print(f"  <userrating>{xur.strip()}</userrating>", file=code)
+                    xun = old_nfo.xpath('//user_note/text()')[0]
+                    if isinstance(xun, str):
+                        print(f"  <user_note>{xun.strip()}</user_note>", file=code)
                 except:
                     pass
             try:
