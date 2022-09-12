@@ -97,6 +97,19 @@ class Javdb(Parser):
         # 记录一下欧美的ids  ['Blacked','Blacked']
         if re.search(r'[a-zA-Z]+\.\d{2}\.\d{2}\.\d{2}', number):
             correct_url = urls[0]
+            for url in urls:    #为欧美的ids查找出正确的url
+                tempurl = urljoin(resp.url, url)
+                tempdeatilpage = self.session.get(tempurl).text
+                if '此內容需要登入才能查看或操作' in tempdeatilpage or '需要VIP權限才能訪問此內容' in tempdeatilpage:
+                    continue
+                else:
+                    htmltree = etree.fromstring(tempdeatilpage, etree.HTMLParser())
+                    part1 = self.getTreeElement(htmltree, self.expr_number)
+                    part2 = self.getTreeElement(htmltree, self.expr_number2)
+                    dp_number = part2 + part1
+                    if dp_number.upper() == self.number.upper():    #如果从页面提取的番号与要查找的番号相同，则为正确的url
+                        correct_url = url
+                        break
         else:
             ids = self.getTreeAll(self.querytree, '//*[contains(@class,"movie-list")]/div/a/div[contains(@class, "video-title")]/strong/text()')
             try:
