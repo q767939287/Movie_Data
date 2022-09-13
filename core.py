@@ -84,7 +84,7 @@ def small_cover_check(path, filename, cover_small, movie_path, json_headers=None
 
 
 # 判断是否存在重复视频文件，如果存在重复文件即将视频文件移动到是失败的目录
-def IsDepulicatefileInfolder(movie_path, json_data, filepath, multi_part, part, leak_word, c_word, hack_word): 
+def IsDepulicatefileInfolder(json_data, filepath, multi_part, part, leak_word, c_word, hack_word): 
     #此段代码拷贝自create_folder() 函数
     title, studio, year, outline, runtime, director, actor_photo, release, number, cover, trailer, website, series, label = get_info(json_data)
     conf = config.getInstance()
@@ -101,7 +101,6 @@ def IsDepulicatefileInfolder(movie_path, json_data, filepath, multi_part, part, 
     # 当演员为空时，location_rule被计算为'/number'绝对路径，导致路径连接忽略第一个路径参数，因此添加./使其始终为相对路径
     path = os.path.join(success_folder, f'./{location_rule.strip()}')
     
-    
     #判断是否存在重复文件
     if multi_part==0 or part == '-CD1':  #如果multi_part为0（表示不存在文件分割）或者是文件分割的第一个文件（包含-CD1），则判断要保存的文件的目录是否存在，如果保存的文件的目录存在，则遍历整个当前子目录，如果由文件大小超过100M，即认为有重复文件；如果保存文件的目录不存在，即认为无重复文件
         returnvalue = False
@@ -115,27 +114,31 @@ def IsDepulicatefileInfolder(movie_path, json_data, filepath, multi_part, part, 
                         break
             
             if returnvalue: #如果存在超过100M的文件，则认为存在重复文件
-                if os.path.getsize(movie_path) == os.path.getsize(fi_d): #如果文件的大小相同，则认为是同一个文件
-                    os.remove(movie_path) #删除相同的文件
-                    print(f"[#]{movie_path} 文件已经存在并相同，删除该文件\n")
+                if os.path.getsize(filepath) == os.path.getsize(fi_d): #如果文件的大小相同，则认为是同一个文件
+                    os.remove(filepath) #删除相同的文件
+                    print(f"[#]{filepath} 文件已经存在并相同，删除该文件\n")
                 else:
-                    print(f"[#]{movie_path} 文件已经存在但并不相同，文件移动到失败目录\n")
+                    print(f"[#]{fi_d} 文件已经存在，{filepath}文件移动到失败目录\n")
                     moveFailedFolder(filepath)
-        
         return returnvalue
         
-            
-    else:   #如果是文件分割的非第一个文件，则判断要保存的文件的目录中是否存在文件
+    else:   #如果是文件分割的非第一个文件，则判断要保存的文件的目录中是否存在相同文件和-CD1文件
         filepath_obj = pathlib.Path(filepath)
         houzhui = filepath_obj.suffix
+        targetpath = os.path.join(path, f"{number}-CD1{leak_word}{c_word}{hack_word}{houzhui}")
+        print(f'[#]targetpath = {targetpath}')
+        if not os.path.exists(targetpath):  #判断-CD1文件是否存在
+            print(f"[#]{targetpath} 文件不存在，{filepath}文件移动到失败目录\n")
+            moveFailedFolder(filepath) #移动不相同的文件到失败目录
+            return True
         targetpath = os.path.join(path, f"{number}{part}{leak_word}{c_word}{hack_word}{houzhui}")
         if os.path.exists(targetpath):
-            if os.path.getsize(movie_path) == os.path.getsize(targetpath): #如果文件的大小相同，则认为是同一个文件
-                os.remove(movie_path) #删除相同的文件
-                print(f"[#]{movie_path} 文件已经存在并相同，删除该文件\n")
+            if os.path.getsize(filepath) == os.path.getsize(targetpath): #如果文件的大小相同，则认为是同一个文件
+                os.remove(filepath) #删除相同的文件
+                print(f"[#]{filepath} 文件已经存在并相同，删除该文件\n")
                 return True
             else:
-                print(f"[#]{movie_path} 文件已经存在但并不相同，文件移动到失败目录\n")
+                print(f"[#]{filepath} 文件已经存在但并不相同，文件移动到失败目录\n")
                 moveFailedFolder(filepath) #移动不相同的文件到失败目录
                 return True
         else:
@@ -909,7 +912,7 @@ def core_main(movie_path, number_th, oCC, specified_source=None, specified_url=N
     #  3：不改变路径刮削
     if conf.main_mode() == 1:
         #如果存在重复的视频文件，则不刮削
-        if IsDepulicatefileInfolder(movie_path, json_data, movie_path, multi_part, part, leak_word, c_word, hack_word):
+        if IsDepulicatefileInfolder(json_data, movie_path, multi_part, part, leak_word, c_word, hack_word):
             return
         
         # 创建文件夹
