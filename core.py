@@ -118,7 +118,7 @@ def IsDepulicatefileInfolder(json_data, filepath, multi_part, part, leak_word, c
                     os.remove(filepath) #删除相同的文件
                     print(f"[#]{filepath} 文件已经存在并相同，删除该文件\n")
                 else:
-                    print(f"[#]{fi_d} 文件已经存在，{filepath}文件移动到失败目录\n")
+                    print(f"[#]{fi_d} 文件已经存在但并不相同，{filepath}文件移动到失败目录\n")
                     moveFailedFolder(filepath)
         return returnvalue
         
@@ -126,7 +126,7 @@ def IsDepulicatefileInfolder(json_data, filepath, multi_part, part, leak_word, c
         filepath_obj = pathlib.Path(filepath)
         houzhui = filepath_obj.suffix
         targetpath = os.path.join(path, f"{number}-CD1{leak_word}{c_word}{hack_word}{houzhui}")
-        print(f'[#]targetpath = {targetpath}')
+        #print(f'[#]targetpath = {targetpath}')
         if not os.path.exists(targetpath):  #判断-CD1文件是否存在
             print(f"[#]{targetpath} 文件不存在，{filepath}文件移动到失败目录\n")
             moveFailedFolder(filepath) #移动不相同的文件到失败目录
@@ -138,7 +138,7 @@ def IsDepulicatefileInfolder(json_data, filepath, multi_part, part, leak_word, c
                 print(f"[#]{filepath} 文件已经存在并相同，删除该文件\n")
                 return True
             else:
-                print(f"[#]{filepath} 文件已经存在但并不相同，文件移动到失败目录\n")
+                print(f"[#] {targetpath}文件已经存在但并不相同，{filepath}文件移动到失败目录\n")
                 moveFailedFolder(filepath) #移动不相同的文件到失败目录
                 return True
         else:
