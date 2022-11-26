@@ -1,24 +1,20 @@
-import json
 import os.path
-import os
 import pathlib
-import re
 import shutil
 import sys
-from videoprops import get_video_properties
 
 from PIL import Image
 from io import BytesIO
-from pathlib import Path
 from datetime import datetime
-from lxml import etree
+# from videoprops import get_video_properties
 
 from ADC_function import *
-# from WebCrawler import get_data_from_json
 from scraper import get_data_from_json
 from number_parser import is_uncensored
 from ImageProcessing import cutImage
 
+
+# from WebCrawler import get_data_from_json
 
 def escape_path(path, escape_literals: str):  # Remove escape literals
     backslash = '\\'
@@ -451,7 +447,7 @@ def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, f
                         print("  <tag>无码</tag>", file=code)
                     if hack_word != '':
                         print("  <tag>破解</tag>", file=code)
-                    if _4k == '4k':
+                    if _4k == '1':
                         print("  <tag>4k</tag>", file=code)
                     for i in tag:
                         print("  <tag>" + i + "</tag>", file=code)
@@ -463,7 +459,7 @@ def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, f
                 print("  <genre>无码</genre>", file=code)
             if hack_word != '':
                 print("  <genre>破解</genre>", file=code)
-            if _4k == '4k':
+            if _4k == '1':
                 print("  <genre>4k</genre>", file=code)
             try:
                 for i in tag:
@@ -802,12 +798,12 @@ def core_main_no_net_op(movie_path, number):
         hack = 1
         hack_word = "-hack"
 
-    try:
-        props = get_video_properties(movie_path)  # 判断是否为4K视频
-        if props['width'] >= 4096 or props['height'] >= 2160:
-            _4k = '1'
-    except:
-        pass
+    # try:
+    #     props = get_video_properties(movie_path)  # 判断是否为4K视频
+    #     if props['width'] >= 4096 or props['height'] >= 2160:
+    #         _4k = '1'
+    # except:
+    #     pass
 
     prestr = f"{number}{leak_word}{c_word}{hack_word}"
 
@@ -930,12 +926,12 @@ def core_main(movie_path, number_th, oCC, specified_source=None, specified_url=N
     if '4K' in tag:
         tag.remove('4K')  # 从tag中移除'4K'
 
-    try:
-        props = get_video_properties(movie_path)  # 判断是否为4K视频
-        if props['width'] >= 4096 or props['height'] >= 2160:
-            _4k = '1'
-    except:
-        pass
+    # try:
+    #     props = get_video_properties(movie_path)  # 判断是否为4K视频
+    #     if props['width'] >= 4096 or props['height'] >= 2160:
+    #         _4k = '1'
+    # except:
+    #     pass
 
     # 调试模式检测
     if conf.debug():
