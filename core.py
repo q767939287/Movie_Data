@@ -433,8 +433,8 @@ def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, f
             print("  <director>" + director + "</director>", file=code)
             print("  <poster>" + poster_path + "</poster>", file=code)
             print("  <thumb>" + thumb_path + "</thumb>", file=code)
-            if not config.getInstance().jellyfin(): # jellyfin 不需要保存fanart
-                print("  <fanart>" + fanart_path + "</fanart>", file=code)
+            #if not config.getInstance().jellyfin(): # jellyfin 不需要保存fanart
+            print("  <fanart>" + fanart_path + "</fanart>", file=code)
             try:
                 for key in actor_list:
                     print("  <actor>", file=code)
