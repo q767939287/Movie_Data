@@ -370,8 +370,8 @@ def image_download(cover, fanart_path, thumb_path, path, filepath, json_headers=
     if file_not_exist_or_empty(full_filepath):
         return
     print('[+]Image Downloaded!', Path(full_filepath).name)
-    if not config.getInstance().jellyfin():
-        shutil.copyfile(full_filepath, os.path.join(path, fanart_path))
+    #if not config.getInstance().jellyfin():
+    shutil.copyfile(full_filepath, os.path.join(path, fanart_path))
 
 
 def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, filepath, tag, actor_list, liuchu,
@@ -413,8 +413,8 @@ def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, f
                 print("  <sorttitle><![CDATA[" + naming_rule + "]]></sorttitle>", file=code)
             else:
                 print("  <title>" + naming_rule + "</title>", file=code)
-                print("  <originaltitle>" + json_data['original_naming_rule'] + "</originaltitle>", file=code)
-                print("  <sorttitle>" + naming_rule + "</sorttitle>", file=code)    
+                print("  <originaltitle>" + json_data['original_naming_rule'].replace('&', '＆') + "</originaltitle>", file=code)
+                print("  <sorttitle>" + naming_rule.replace('&', '＆') + "</sorttitle>", file=code)    
             print("  <customrating>JP-18+</customrating>", file=code)
             print("  <mpaa>JP-18+</mpaa>", file=code)
             try:
@@ -427,8 +427,8 @@ def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, f
                 print("  <outline><![CDATA[" + outline + "]]></outline>", file=code)
                 print("  <plot><![CDATA[" + outline + "]]></plot>", file=code)
             else:
-                print("  <outline>" + outline + "</outline>", file=code)
-                print("  <plot>" + outline + "</plot>", file=code)
+                print("  <outline>" + outline.replace('&', '＆') + "</outline>", file=code)
+                print("  <plot>" + outline.replace('&', '＆') + "</plot>", file=code)
             print("  <runtime>" + str(runtime).replace(" ", "") + "</runtime>", file=code)
             print("  <director>" + director + "</director>", file=code)
             print("  <poster>" + poster_path + "</poster>", file=code)
