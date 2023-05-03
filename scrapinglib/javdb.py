@@ -131,8 +131,6 @@ class Javdb(Parser):
         # NOTE 检测匹配与更新 self.number
         if dp_number.upper() != self.number.upper():
             raise Exception(f'[!] {self.number}: find [{dp_number}] in javdb, not match')
-        if dp_number[0].islower():
-            dp_number = dp_number.title()
         self.number = dp_number
         return self.number
 

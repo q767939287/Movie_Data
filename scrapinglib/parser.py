@@ -140,7 +140,7 @@ class Parser:
     def dictformat(self, htmltree):
         try:
             dic = {
-                'number': self.getNum(htmltree),
+                'number': self.getNum(htmltree).upper(),
                 'title': self.getTitle(htmltree),
                 'studio': self.getStudio(htmltree),
                 'release': self.getRelease(htmltree),
