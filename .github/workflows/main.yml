@@ -50,12 +50,12 @@ jobs:
         run: |
           pyinstaller \
             --onefile Movie_Data_Capture.py \
-            --collect-submodules "scrapinglib" \
             --collect-submodules "ImageProcessing" \
             --collect-data "face_recognition_models" \
             --collect-data "cloudscraper" \
             --collect-data "opencc" \
             --add-data "Img:Img" \
+            --add-data "scrapinglib:scrapinglib" \
             --add-data "config.ini:." \
 
       - name: Build with PyInstaller for windows
@@ -63,12 +63,12 @@ jobs:
         run: |
           pyinstaller `
             --onefile Movie_Data_Capture.py `
-            --collect-submodules "scrapinglib" `
             --collect-submodules "ImageProcessing" `
             --collect-data "face_recognition_models" `
             --collect-data "cloudscraper" `
             --collect-data "opencc" `
             --add-data "Img;Img" `
+            --add-data "scrapinglib;scrapinglib" `
             --add-data "config.ini;." `
 
       - name: Copy config.ini
@@ -90,3 +90,11 @@ jobs:
         with:
           name: MDC-${{ env.VERSION }}-${{ runner.os }}-amd64
           path: dist
+
+      - name: Run test
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cd dist
+          touch IPX-292.mp4
+          touch STAR-437-C.mp4
+          ./Movie_Data_Capture

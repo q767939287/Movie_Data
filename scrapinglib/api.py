@@ -6,6 +6,7 @@ from .parser import Parser
 import config
 import importlib
 
+
 def search(number, sources: str = None, **kwargs):
     """ 根据`番号/电影`名搜索信息
 
@@ -81,10 +82,10 @@ class Scraping:
                 if self.debug:
                     print('[+]select', source)
                 try:
-                    module = importlib.import_module('.'+source,'scrapinglib')
+                    module = importlib.import_module('.' + source, 'scrapinglib')
                     parser_type = getattr(module, source.capitalize())
-                    parser:Parser = parser_type()
-                    data = parser.scrape(name,self)
+                    parser: Parser = parser_type()
+                    data = parser.scrape(name, self)
                     if data == 404:
                         continue
                     json_data = json.loads(data)
@@ -128,10 +129,10 @@ class Scraping:
                 if self.debug:
                     print('[+]select', source)
                 try:
-                    module = importlib.import_module('.'+source,'scrapinglib')
+                    module = importlib.import_module('.' + source, 'scrapinglib')
                     parser_type = getattr(module, source.capitalize())
-                    parser:Parser = parser_type()
-                    data = parser.scrape(number,self)
+                    parser: Parser = parser_type()
+                    data = parser.scrape(number, self)
                     if data == 404:
                         continue
                     json_data = json.loads(data)
@@ -147,13 +148,13 @@ class Scraping:
                     break
             except:
                 continue
-            
+
         # javdb的封面有水印，如果可以用其他源的封面来替换javdb的封面
         if 'source' in json_data and json_data['source'] == 'javdb':
             # search other sources
             other_sources = sources[sources.index('javdb') + 1:]
             while other_sources:
-            # If cover not found in other source, then skip using other sources using javdb cover instead
+                # If cover not found in other source, then skip using other sources using javdb cover instead
                 try:
                     other_json_data = self.searchAdult(number, other_sources)
                     if other_json_data is not None and 'cover' in other_json_data and other_json_data['cover'] != '':
