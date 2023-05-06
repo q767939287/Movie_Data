@@ -176,7 +176,7 @@ class Scraping:
             return None
 
         # If actor is anonymous, Fill in Anonymous
-        if len(json_data['actor']) == 0:
+        if 'actor'not in json_data or len(json_data['actor']) == 0:
             if config.getInstance().anonymous_fill() == True:
                 if "zh_" in config.getInstance().get_target_language():
                     json_data['actor'] = "佚名"
