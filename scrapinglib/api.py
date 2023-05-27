@@ -243,8 +243,8 @@ class Scraping:
                 if "madou" in sources:
                     sources = insert(sources, "madou")
             #将前2位的源仍放在最前面
-            sources = insert(sources, source0)
             sources = insert(sources, source1)
+            sources = insert(sources, source0)
             
             
         # check sources in func_mapping
