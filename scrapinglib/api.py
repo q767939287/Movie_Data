@@ -202,6 +202,9 @@ class Scraping:
                 sources.insert(0, sources.pop(sources.index(source)))
             return sources
 
+        #保留前2位的源
+        source0 = sources[0]
+        source1 = sources[1]
         if len(sources) <= len(self.adult_full_sources):
             # if the input file name matches certain rules,
             # move some web service to the beginning of the list
@@ -239,7 +242,11 @@ class Scraping:
                     sources = insert(sources, "xcity")
                 if "madou" in sources:
                     sources = insert(sources, "madou")
-
+            #将前2位的源仍放在最前面
+            sources = insert(sources, source0)
+            sources = insert(sources, source1)
+            
+            
         # check sources in func_mapping
         todel = []
         for s in sources:
