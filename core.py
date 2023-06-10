@@ -79,68 +79,6 @@ def small_cover_check(path, filename, cover_small, movie_path, json_headers=None
     print('[+]Image Downloaded! ' + full_filepath.name)
 
 
-# 判断是否存在重复视频文件，如果存在重复文件即将视频文件移动到是失败的目录
-def IsDepulicatefileInfolder(json_data, filepath, multi_part, part, leak_word, c_word, hack_word): 
-    #此段代码拷贝自create_folder() 函数
-    title, studio, year, outline, runtime, director, actor_photo, release, number, cover, trailer, website, series, label = get_info(json_data)
-    conf = config.getInstance()
-    success_folder = conf.success_folder()
-    actor = json_data.get('actor')
-    location_rule = eval(conf.location_rule(), json_data)
-    if 'actor' in conf.location_rule() and len(actor) > 100:
-        print(conf.location_rule())
-        location_rule = eval(conf.location_rule().replace("actor","'多人作品'"), json_data)
-    maxlen = conf.max_title_len()
-    if 'title' in conf.location_rule() and len(title) > maxlen:
-        shorttitle = title[0:maxlen]
-        location_rule = location_rule.replace(title, shorttitle)
-    # 当演员为空时，location_rule被计算为'/number'绝对路径，导致路径连接忽略第一个路径参数，因此添加./使其始终为相对路径
-    path = os.path.join(success_folder, f'./{location_rule.strip()}')
-    
-    #判断是否存在重复文件
-    if multi_part==0 or part == '-CD1':  #如果multi_part为0（表示不存在文件分割）或者是文件分割的第一个文件（包含-CD1），则判断要保存的文件的目录是否存在，如果保存的文件的目录存在，则遍历整个当前子目录，如果由文件大小超过100M，即认为有重复文件；如果保存文件的目录不存在，即认为无重复文件
-        returnvalue = False
-        if os.path.exists(path):    #判断要保存的文件的目录是否存在，则遍历整个当前子目录
-            files = os.listdir(path)
-            for fi in files:    
-                fi_d = os.path.join(path,fi)
-                if not os.path.isdir(fi_d):     #如果该文件不是目录,则判断文件大小，如有文件大小超过100M，即认为有重复文件
-                    if os.path.getsize(fi_d) > 1048576000:
-                        returnvalue = True
-                        break
-            
-            if returnvalue: #如果存在超过100M的文件，则认为存在重复文件
-                if os.path.getsize(filepath) == os.path.getsize(fi_d): #如果文件的大小相同，则认为是同一个文件
-                    os.remove(filepath) #删除相同的文件
-                    print(f"[#]{filepath} 文件已经存在并相同，删除该文件\n")
-                else:
-                    print(f"[#]{fi_d} 文件已经存在但并不相同，{filepath}文件移动到失败目录\n")
-                    moveFailedFolder(filepath)
-        return returnvalue
-        
-    else:   #如果是文件分割的非第一个文件，则判断要保存的文件的目录中是否存在相同文件和-CD1文件
-        filepath_obj = pathlib.Path(filepath)
-        houzhui = filepath_obj.suffix
-        targetpath = os.path.join(path, f"{number}-CD1{leak_word}{c_word}{hack_word}{houzhui}")
-        #print(f'[#]targetpath = {targetpath}')
-        if not os.path.exists(targetpath):  #判断-CD1文件是否存在
-            print(f"[#]{targetpath} 文件不存在，{filepath}文件移动到失败目录\n")
-            moveFailedFolder(filepath) #移动不相同的文件到失败目录
-            return True
-        targetpath = os.path.join(path, f"{number}{part}{leak_word}{c_word}{hack_word}{houzhui}")
-        if os.path.exists(targetpath):
-            if os.path.getsize(filepath) == os.path.getsize(targetpath): #如果文件的大小相同，则认为是同一个文件
-                os.remove(filepath) #删除相同的文件
-                print(f"[#]{filepath} 文件已经存在并相同，删除该文件\n")
-                return True
-            else:
-                print(f"[#] {targetpath}文件已经存在但并不相同，{filepath}文件移动到失败目录\n")
-                moveFailedFolder(filepath) #移动不相同的文件到失败目录
-                return True
-        else:
-            return False
-
-
 def create_folder(json_data):  # 创建文件夹
     title, studio, year, outline, runtime, director, actor_photo, release, number, cover, trailer, website, series, label = get_info(
         json_data)
@@ -370,11 +308,12 @@ def image_download(cover, fanart_path, thumb_path, path, filepath, json_headers=
     if file_not_exist_or_empty(full_filepath):
         return
     print('[+]Image Downloaded!', Path(full_filepath).name)
-    shutil.copyfile(full_filepath, os.path.join(path, fanart_path))
+    if not config.getInstance().jellyfin():
+        shutil.copyfile(full_filepath, os.path.join(path, fanart_path))
 
 
 def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, filepath, tag, actor_list, liuchu,
-                uncensored, hack, hack_word, _4k, fanart_path, poster_path, thumb_path):
+                uncensored, hack, hack_word, _4k, fanart_path, poster_path, thumb_path, iso):
     title, studio, year, outline, runtime, director, actor_photo, release, number, cover, trailer, website, series, label = get_info(
         json_data)
     if config.getInstance().main_mode() == 3:  # 模式3下，由于视频文件不做任何改变，.nfo文件必须和视频文件名称除后缀外完全一致，KODI等软件方可支持
@@ -413,8 +352,8 @@ def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, f
                 print("  <sorttitle><![CDATA[" + naming_rule + "]]></sorttitle>", file=code)
             else:
                 print("  <title>" + naming_rule + "</title>", file=code)
-                print("  <originaltitle>" + json_data['original_naming_rule'].replace('&', '＆') + "</originaltitle>", file=code)
-                print("  <sorttitle>" + naming_rule.replace('&', '＆') + "</sorttitle>", file=code)    
+                print("  <originaltitle>" + json_data['original_naming_rule'] + "</originaltitle>", file=code)
+                print("  <sorttitle>" + naming_rule + "</sorttitle>", file=code)
             print("  <customrating>JP-18+</customrating>", file=code)
             print("  <mpaa>JP-18+</mpaa>", file=code)
             try:
@@ -427,13 +366,14 @@ def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, f
                 print("  <outline><![CDATA[" + outline + "]]></outline>", file=code)
                 print("  <plot><![CDATA[" + outline + "]]></plot>", file=code)
             else:
-                print("  <outline>" + outline.replace('&', '＆') + "</outline>", file=code)
-                print("  <plot>" + outline.replace('&', '＆') + "</plot>", file=code)
+                print("  <outline>" + outline + "</outline>", file=code)
+                print("  <plot>" + outline + "</plot>", file=code)
             print("  <runtime>" + str(runtime).replace(" ", "") + "</runtime>", file=code)
             print("  <director>" + director + "</director>", file=code)
             print("  <poster>" + poster_path + "</poster>", file=code)
             print("  <thumb>" + thumb_path + "</thumb>", file=code)
-            print("  <fanart>" + fanart_path + "</fanart>", file=code)
+            if not config.getInstance().jellyfin():  # jellyfin 不需要保存fanart
+                print("  <fanart>" + fanart_path + "</fanart>", file=code)
             try:
                 for key in actor_list:
                     print("  <actor>", file=code)
@@ -447,7 +387,7 @@ def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, f
                 pass
             print("  <maker>" + studio + "</maker>", file=code)
             print("  <label>" + label + "</label>", file=code)
-            
+
             jellyfin = config.getInstance().jellyfin()
             if not jellyfin:
                 if config.getInstance().actor_only_tag():
@@ -495,35 +435,19 @@ def print_files(path, leak_word, c_word, naming_rule, part, cn_sub, json_data, f
                     xur = old_nfo.xpath('//userrating/text()')[0]
                     if isinstance(xur, str) and re.match('\d+\.\d+|\d+', xur.strip()):
                         print(f"  <userrating>{xur.strip()}</userrating>", file=code)
-                    xun = old_nfo.xpath('//user_note/text()')[0]
-                    if isinstance(xun, str):
-                        print(f"  <user_note>{xun.strip()}</user_note>", file=code)
                 except:
                     pass
             try:
                 f_rating = json_data.get('userrating')
                 uc = json_data.get('uservotes')
-                
-                f_source = json_data.get('source')
-                if f_source == 'javlibrary':
-                    print(f"""  <rating>{round(f_rating, 1)}</rating>
-  <criticrating>{round(f_rating, 1)}</criticrating>
-  <ratings>
-    <rating name="javlibrary" max="10" default="true">
-      <value>{f_rating}</value>
-      <votes>{uc}</votes>
-    </rating>
-  </ratings>""", file=code)
-                elif f_source == 'javdb':
-                    print(f"""  <rating>{round(f_rating * 2.0, 1)}</rating>
-  <criticrating>{round(f_rating * 2.0, 1)}</criticrating>
+                print(f"""  <rating>{round(f_rating * 2.0, 1)}</rating>
+  <criticrating>{round(f_rating * 20.0, 1)}</criticrating>
   <ratings>
     <rating name="javdb" max="5" default="true">
       <value>{f_rating}</value>
       <votes>{uc}</votes>
     </rating>
   </ratings>""", file=code)
-
             except:
                 if old_nfo:
                     try:
@@ -997,10 +921,6 @@ def core_main(movie_path, number_th, oCC, specified_source=None, specified_url=N
     #  2: 整理模式 / Organizing mode
     #  3：不改变路径刮削
     if conf.main_mode() == 1:
-        #如果存在重复的视频文件，则不刮削
-        if IsDepulicatefileInfolder(json_data, movie_path, multi_part, part, leak_word, c_word, hack_word):
-            return
-        
         # 创建文件夹
         path = create_folder(json_data)
         if multi_part == 1:
