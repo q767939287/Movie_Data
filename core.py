@@ -626,6 +626,8 @@ def add_to_pic(pic_path, img_pic, size, count, mode):
         pngpath = "Img/HACK.png"
     elif mode == 5:
         pngpath = "Img/4K.png"
+    elif mode == 6:
+        pngpath = "Img/ISO.png"
     else:
         print('[-]Error: watermark image param mode invalid!')
         return
