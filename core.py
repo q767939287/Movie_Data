@@ -604,10 +604,13 @@ def add_mark_thread(pic_path, cn_sub, leak, uncensored, hack, _4k, iso):
         count = (count + 1) % 4
     if uncensored:
         add_to_pic(pic_path, img_pic, size, count, 3)
+        count = (count + 1) % 4
     if hack:
         add_to_pic(pic_path, img_pic, size, count, 4)
+        count = (count + 1) % 4
     if _4k:
         add_to_pic(pic_path, img_pic, size, count, 5)
+        count = (count + 1) % 4
     if iso:
         add_to_pic(pic_path, img_pic, size, count, 6)
     img_pic.close()
