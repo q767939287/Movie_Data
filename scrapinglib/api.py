@@ -107,7 +107,7 @@ class Scraping:
         # If actor is anonymous, Fill in Anonymous
         if len(json_data['actor']) == 0:
             if config.getInstance().anonymous_fill() == True:
-                if "zh_" in config.getInstance().get_target_language():
+                if "zh_" in config.getInstance().get_target_language() or "ZH" in config.getInstance().get_target_language():
                     json_data['actor'] = "佚名"
                 else:
                     json_data['actor'] = "Anonymous"
@@ -167,7 +167,7 @@ class Scraping:
         # If actor is anonymous, Fill in Anonymous
         if 'actor'not in json_data or len(json_data['actor']) == 0:
             if config.getInstance().anonymous_fill() == True:
-                if "zh_" in config.getInstance().get_target_language():
+                if "zh_" in config.getInstance().get_target_language() or "ZH" in config.getInstance().get_target_language():
                     json_data['actor'] = "佚名"
                 else:
                     json_data['actor'] = "Anonymous"
@@ -231,9 +231,6 @@ class Scraping:
                 sources = insert(sources, "mgstage")
             elif "gcolle" in sources and (re.search("\d{6}", file_number)):
                 sources = insert(sources, "gcolle")
-            elif "madou" in sources and (re.search(r"^[a-z0-9]{3,}-[0-9]{1,}$", lo_file_number)):
-                sources = insert(sources, "madou")
-
             elif re.search(r"^\d{5,}", file_number) or "heyzo" in lo_file_number:
                 if "avsox" in sources:
                     sources = insert(sources, "avsox")
