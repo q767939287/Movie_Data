@@ -6,12 +6,16 @@ import sys
 from PIL import Image
 from io import BytesIO
 from datetime import datetime
-# from videoprops import get_video_properties
+from videoprops import get_video_properties
 
 from ADC_function import *
 from scraper import get_data_from_json
 from number_parser import is_uncensored
 from ImageProcessing import cutImage
+
+#解决处理图片失败的问题
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 # from WebCrawler import get_data_from_json
@@ -838,13 +842,13 @@ def core_main_no_net_op(movie_path, number):
 
     if '.iso'.upper() in str(movie_path).upper() or '.iso' in movie_path:
         iso = True
-    # try:
-
-    #     props = get_video_properties(movie_path)  # 判断是否为4K视频
-    #     if props['width'] >= 4096 or props['height'] >= 2160:
-    #         _4k = True
-    # except:
-    #     pass
+    try:
+        
+        props = get_video_properties(movie_path)  # 判断是否为4K视频
+        if props['width'] >= 4096 or props['height'] >= 2160:
+            _4k = True
+    except:
+        pass
     prestr = f"{number}{leak_word}{c_word}{hack_word}"
 
     full_nfo = Path(path) / f"{prestr}{part}.nfo"
@@ -987,12 +991,12 @@ def core_main(movie_path, number_th, oCC, specified_source=None, specified_url=N
     if '无码破解' in tag:
         tag.remove('无码破解')  # 从tag中移除'无码破解'
 
-    # try:
-    #     props = get_video_properties(movie_path)  # 判断是否为4K视频
-    #     if props['width'] >= 4096 or props['height'] >= 2160:
-    #         _4k = True
-    # except:
-    #     pass
+    try:
+        props = get_video_properties(movie_path)  # 判断是否为4K视频
+        if props['width'] >= 4096 or props['height'] >= 2160:
+            _4k = True
+    except:
+        pass
 
     # 调试模式检测
     if conf.debug():
@@ -1059,7 +1063,7 @@ def core_main(movie_path, number_th, oCC, specified_source=None, specified_url=N
                 pass
 
         # 裁剪图
-        cutImage(imagecut, path, thumb_path, poster_path, bool(conf.face_uncensored_only() and not uncensored))
+        cutImage(imagecut, path, thumb_path, poster_path, bool(conf.face_uncensored_only() and not json_data.get('uncensored')))   #根据返回的信息修正是否是无码的判断
 
         # 兼容Jellyfin封面图文件名规则
         if multi_part and conf.jellyfin_multi_part_fanart():
