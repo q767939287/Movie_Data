@@ -48,6 +48,7 @@ def get_data_from_json(
     if config_proxy.enable:
         proxies = config_proxy.proxies()
 
+    cookies = dict()
     # javdb website logic
     # javdb have suffix
     javdb_sites = conf.javdb_sites().split(',')
@@ -56,30 +57,31 @@ def get_data_from_json(
     javdb_sites.append("javdb")
     # 不加载过期的cookie，javdb登录界面显示为7天免登录，故假定cookie有效期为7天
     has_valid_cookie = False
-    for cj in javdb_sites:
-        javdb_site = cj
-        cookie_json = javdb_site + '.json'
-        cookies_dict, cookies_filepath = load_cookies(cookie_json)
-        if isinstance(cookies_dict, dict) and isinstance(cookies_filepath, str):
-            cdays = file_modification_days(cookies_filepath)
-            if cdays < 7:
-                javdb_cookies = cookies_dict
-                has_valid_cookie = True
-                break
-            elif cdays != 9999:
-                print(
+    cookies_dict, cookies_filepath = load_cookies('javdb.json')
+    javdb_site = javdb_sites[0]
+    if isinstance(cookies_dict, dict) and isinstance(cookies_filepath, str):
+        cdays = file_modification_days(cookies_filepath)
+        if cdays < 7:
+            javdb_cookies = cookies_dict
+            has_valid_cookie = True
+        elif cdays != 9999:
+            print(
                     f'[!]Cookies file {cookies_filepath} was updated {cdays} days ago, it will not be used for HTTP requests.')
     if not has_valid_cookie:
         # get real random site from javdb_sites, because random is not really random when the seed value is known
         javdb_site = secrets.choice(javdb_sites)
         javdb_cookies = None
+    cookies['javdb'] = javdb_cookies
+    
+    cookies_dict, cookies_filepath = load_cookies('javbus.json')
+    cookies['javbus'] = cookies_dict
 
     ca_cert = None
     if conf.cacert_file():
         ca_cert = conf.cacert_file()
 
     json_data = search(file_number, sources, proxies=proxies, verify=ca_cert,
-                        dbsite=javdb_site, dbcookies=javdb_cookies,
+                        dbsite=javdb_site, dbcookies=cookies,
                         morestoryline=conf.is_storyline(),
                         specifiedSource=specified_source, specifiedUrl=specified_url,
                         debug = conf.debug())

@@ -30,11 +30,31 @@ class Javbus(Parser):
     expr_tags = '/html/head/meta[@name="keywords"]/@content'
     expr_uncensored = '//*[@id="navbar"]/ul[1]/li[@class="active"]/a[contains(@href,"uncensored")]'
 
+    def updateCore(self, core):
+        if core.proxies:
+            self.proxies = core.proxies
+        if core.verify:
+            self.verify = core.verify
+        if core.morestoryline:
+            self.morestoryline = True
+        if core.specifiedSource == self.source:
+            self.specifiedUrl = core.specifiedUrl
+        # special
+        if core.dbcookies['javbus']:
+            self.cookies = core.dbcookies['javbus']
+        else:
+            self.cookies = None
+        if core.dbsite:
+            self.dbsite = core.dbsite
+        else:
+            self.dbsite = 'javbus'
+    
     def search(self, number):
         self.number = number
         try:
             if self.specifiedUrl:
                 self.detailurl = self.specifiedUrl
+                self.session = request_session(cookies=self.cookies, proxies=self.proxies, verify=self.verify)
                 htmltree = self.getHtmlTree(self.detailurl)
                 result = self.dictformat(htmltree)
                 return result
@@ -68,7 +88,7 @@ class Javbus(Parser):
         if self.specifiedUrl:
             self.detailurl = self.specifiedUrl
         else:
-            self.detailurl = 'https://www.javbus.red/' + w_number
+            self.detailurl = 'https://www.javbus.com/' + w_number
         self.htmlcode = self.getHtml(self.detailurl)
         if self.htmlcode == 404:
             return 404

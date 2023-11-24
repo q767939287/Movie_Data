@@ -54,8 +54,8 @@ class Javdb(Parser):
         if core.specifiedSource == self.source:
             self.specifiedUrl = core.specifiedUrl
         # special
-        if core.dbcookies:
-            self.cookies = core.dbcookies
+        if core.dbcookies['javdb']:
+            self.cookies = core.dbcookies['javdb']
         else:
             self.cookies =  {'over18':'1', 'theme':'auto', 'locale':'zh'}
         if core.dbsite:
