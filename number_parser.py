@@ -58,7 +58,7 @@ def get_number(debug: bool, file_path: str) -> str:
             filepath = filepath.replace(".chs", "").replace(".cht", "")
             file_number = str(re.findall(r'(.+?)\.', filepath)).strip(" [']")
             return file_number
-        elif '-' in filepath or '_' in filepath:  # 普通提取番号 主要处理包含减号-和_的番号
+        elif ('-' in filepath and '-C' not in filepath.upper()) or '_' in filepath:  # 普通提取番号 主要处理包含减号-和_的番号
             filepath = G_spat.sub("", filepath)
             filename = str(re.sub("\[\d{4}-\d{1,2}-\d{1,2}\] - ", "", filepath))  # 去除文件名中时间
             lower_check = filename.lower()
