@@ -51,7 +51,7 @@ class Javlibrary(Parser):
         return result
 
     def queryNumberUrl(self, number:str):
-        queryUrl = "http://www.javlibrary.com/cn/vl_searchbyid.php?keyword=" + number
+        queryUrl = "https://www.s74m.com/cn/vl_searchbyid.php?keyword=" + number
         queryResult = self.session.get(queryUrl)
         
         if queryResult and "/?v=jav" in queryResult.url:
@@ -63,7 +63,7 @@ class Javlibrary(Parser):
             if number in numbers:
                 urls = queryTree.xpath('//div[@class="id"]/../@href')
                 detailurl = urls[numbers.index(number)]
-                return "http://www.javlibrary.com/cn" + detailurl.strip('.')
+                return "https://www.s74m.com/cn" + detailurl.strip('.')
         return None
 
     def getTitle(self, htmltree):
